@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>OBHS Club Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #0f0f1a; font-family: 'Inter', sans-serif; }
+    input, select, textarea, button { font-family: 'Inter', sans-serif; }
+    input[type=text], input[type=email], select, textarea {
+      background: #22223a; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; color: #fff; padding: 10px 14px; font-size: 14px;
+      width: 100%; outline: none;
+    }
+    input[type=text]:focus, input[type=email]:focus, select:focus, textarea:focus {
+      border-color: rgba(255,255,255,0.25);
+    }
+    input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; accent-color: #4A2C8F; }
+    select option { background: #22223a; }
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #0f0f1a; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const C = {
+  purple:'#4A2C8F', purpleDim:'rgba(74,44,143,0.5)', night:'#0f0f1a',
+  nightMid:'#1A1A2E', nightSurf:'#22223a', nightBorder:'rgba(255,255,255,0.08)',
+  gold:'#F5C842', white:'#ffffff', muted:'rgba(255,255,255,0.55)', faint:'rgba(255,255,255,0.18)',
+};
+const CAT_COLORS = {
+  'Academic':'#378ADD','Arts':'#D4537E','Athletics':'#E24B4A',
+  'Community':'#1D9E75','Culture':'#7F77DD','STEM':'#EF9F27','Other':'#888780',
+};
+const DAYS = ['Mondays','Tuesdays','Wednesdays','Thursdays','Fridays','Mondays & Wednesdays','Tuesdays & Thursdays'];
+const CATS = Object.keys(CAT_COLORS);
+
+const SEED = [
+  {id:1,name:'Chess Club',tagline:'Think ahead. Play bold.',category:'Academic',day:'Tuesdays',time:'3:00–4:00 PM',room:'Room 214',grades:'All grades',advisor:'Mr. Rivera',contact:'mrivera@obhs.edu',about:'Improve your strategy, compete in tournaments, and make new friends. No experience necessary — beginners welcome!',accent:'#F5C842',status:'approved'},
+  {id:2,name:'Drama Club',tagline:'Every story deserves a stage.',category:'Arts',day:'Mondays & Wednesdays',time:'3:30–5:30 PM',room:'Auditorium',grades:'All grades',advisor:'Ms. Torres',contact:'mtorres@obhs.edu',about:'From Shakespeare to original productions, Drama Club is your home for performance, stagecraft, and storytelling.',accent:'#D4537E',status:'approved'},
+  {id:3,name:'Robotics Club',tagline:'Build it. Code it. Win.',category:'STEM',day:'Thursdays',time:'3:00–5:00 PM',room:'Room 118',grades:'9th–12th',advisor:'Mr. Chen',contact:'mchen@obhs.edu',about:'Compete in regional robotics competitions, learn engineering fundamentals, and work as a team to solve real-world challenges.',accent:'#EF9F27',status:'approved'},
+  {id:4,name:'Environmental Club',tagline:'Small actions, real impact.',category:'Community',day:'Fridays',time:'2:45–3:45 PM',room:'Room 302',grades:'All grades',advisor:'Ms. Park',contact:'mpark@obhs.edu',about:'Organize cleanups, run awareness campaigns, and push for greener policies at OBHS.',accent:'#1D9E75',status:'approved'},
+];
+
+const gs = {
+  card: {background:C.nightSurf,border:`1px solid ${C.nightBorder}`,borderRadius:12,padding:'20px 24px'},
+  label: {display:'block',fontSize:12,fontWeight:500,color:C.muted,marginBottom:6,letterSpacing:'0.04em',textTransform:'uppercase'},
+  btnPrimary: {background:C.purple,color:C.white,border:'none',borderRadius:8,padding:'11px 22px',fontSize:14,fontWeight:600,cursor:'pointer',transition:'opacity 0.15s'},
+  btnGhost: {background:'transparent',color:C.muted,border:`1px solid ${C.nightBorder}`,borderRadius:8,padding:'10px 18px',fontSize:13,fontWeight:500,cursor:'pointer'},
+  sectionTitle: {fontFamily:"'Oswald', sans-serif",fontSize:28,fontWeight:700,color:C.white,textTransform:'uppercase',letterSpacing:'0.04em',margin:'0 0 4px'},
+  pill: (color) => ({display:'inline-block',padding:'3px 10px',borderRadius:99,fontSize:11,fontWeight:500,background:color+'22',color:color,border:`1px solid ${color}44`}),
+};
+
+function FlyerPreview({data, scale=1}) {
+  const {name,tagline,day,time,room,grades,about,contact,advisor,accent=C.gold} = data;
+  const s = scale;
+  return (
+    <div style={{width:280*s,minHeight:396*s,background:C.nightMid,borderRadius:8*s,overflow:'hidden',fontFamily:"'Inter',sans-serif",display:'flex',flexDirection:'column',flexShrink:0}}>
+      <div style={{position:'relative',background:C.purple,padding:`${20*s}px ${20*s}px ${18*s}px`,overflow:'hidden',minHeight:120*s,display:'flex',flexDirection:'column',justifyContent:'flex-end'}}>
+        <div style={{position:'absolute',top:-20*s,right:-10*s,width:85*s,height:190*s,background:accent,transform:'rotate(-15deg)',transformOrigin:'top right',opacity:0.92}}/>
+        <div style={{position:'absolute',top:-20*s,right:52*s,width:17*s,height:190*s,background:C.nightMid,transform:'rotate(-15deg)',transformOrigin:'top right',opacity:0.35}}/>
+        <p style={{fontFamily:"'Oswald',sans-serif",fontSize:9*s,fontWeight:400,letterSpacing:'0.12em',color:accent,textTransform:'uppercase',margin:`0 0 ${4*s}px`,position:'relative',zIndex:2}}>Old Bridge High School · Student Life</p>
+        <p style={{fontFamily:"'Oswald',sans-serif",fontSize:30*s,fontWeight:700,color:C.white,lineHeight:1,margin:0,textTransform:'uppercase',position:'relative',zIndex:2,maxWidth:185*s,wordBreak:'break-word'}}>{name||'Club Name'}</p>
+        {tagline&&<p style={{fontSize:10*s,color:'rgba(255,255,255,0.72)',margin:`${5*s}px 0 0`,position:'relative',zIndex:2,maxWidth:175*s,lineHeight:1.4}}>{tagline}</p>}
+      </div>
+      <div style={{flex:1,padding:`${14*s}px ${18*s}px ${16*s}px`,display:'flex',flexDirection:'column',gap:10*s}}>
+        {[{icon:'📅',label:'When',val:[day,time].filter(Boolean).join(', ')},{icon:'📍',label:'Where',val:room},{icon:'👥',label:'Open to',val:grades}].filter(r=>r.val).map(row=>(
+          <div key={row.label} style={{display:'flex',alignItems:'flex-start',gap:10*s}}>
+            <div style={{width:26*s,height:26*s,borderRadius:6*s,background:accent+'20',border:`0.5px solid ${accent}40`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontSize:12*s}}>{row.icon}</div>
+            <div>
+              <p style={{fontSize:8*s,fontWeight:500,letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,255,255,0.4)',margin:`0 0 ${1*s}px`,fontFamily:"'Oswald',sans-serif"}}>{row.label}</p>
+              <p style={{fontSize:12*s,fontWeight:500,color:C.white,margin:0,lineHeight:1.3}}>{row.val}</p>
+            </div>
+          </div>
+        ))}
+        {about&&<><div style={{height:0.5,background:'rgba(255,255,255,0.08)'}}/><div style={{background:'rgba(255,255,255,0.05)',borderRadius:6*s,borderLeft:`2.5px solid ${C.purple}`,padding:`${9*s}px ${11*s}px`}}><p style={{fontSize:8*s,fontWeight:500,letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,255,255,0.4)',margin:`0 0 ${3*s}px`,fontFamily:"'Oswald',sans-serif"}}>About</p><p style={{fontSize:11*s,color:'rgba(255,255,255,0.82)',margin:0,lineHeight:1.5}}>{about}</p></div></>}
+      </div>
+      <div style={{background:'rgba(74,44,143,0.5)',borderTop:'0.5px solid rgba(74,44,143,0.8)',padding:`${9*s}px ${18*s}px`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div>
+          <p style={{fontSize:8*s,textTransform:'uppercase',letterSpacing:'0.1em',color:'rgba(255,255,255,0.4)',margin:`0 0 ${2*s}px`,fontFamily:"'Oswald',sans-serif"}}>Contact</p>
+          <p style={{fontSize:11*s,color:accent,fontWeight:500,margin:0,wordBreak:'break-all'}}>{[advisor,contact].filter(Boolean).join(' · ')||'—'}</p>
+        </div>
+        <p style={{fontFamily:"'Oswald',sans-serif",fontSize:8*s,fontWeight:700,letterSpacing:'0.08em',color:'rgba(255,255,255,0.18)',textTransform:'uppercase',textAlign:'right',margin:0,whiteSpace:'nowrap'}}>OBHS<br/>Knights</p>
+      </div>
+    </div>
+  );
+}
+
+function printFlyer(data) {
+  const {name,tagline,day,time,room,grades,about,contact,advisor,accent=C.gold}=data;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${name} — OBHS Club Flyer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>@page{size:5.5in 8.5in;margin:0}*{box-sizing:border-box}body{margin:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .f{width:5.5in;min-height:8.5in;background:#1A1A2E;font-family:'Inter',sans-serif;display:flex;flex-direction:column}
+  .fh{position:relative;background:#4A2C8F;padding:52px 44px 42px;overflow:hidden;min-height:240px;display:flex;flex-direction:column;justify-content:flex-end}
+  .s1{position:absolute;top:-40px;right:-20px;width:170px;height:380px;background:${accent};transform:rotate(-15deg);transform-origin:top right;opacity:.92}
+  .s2{position:absolute;top:-40px;right:105px;width:34px;height:380px;background:#1A1A2E;transform:rotate(-15deg);transform-origin:top right;opacity:.35}
+  .sc{font-family:'Oswald',sans-serif;font-size:11pt;letter-spacing:.12em;color:${accent};text-transform:uppercase;margin:0 0 8px;position:relative;z-index:2}
+  .cn{font-family:'Oswald',sans-serif;font-size:60pt;font-weight:700;color:#fff;line-height:1;margin:0;text-transform:uppercase;position:relative;z-index:2;max-width:3.5in}
+  .ct{font-size:13pt;color:rgba(255,255,255,.72);margin:10px 0 0;position:relative;z-index:2;max-width:3.2in;line-height:1.4}
+  .fb{flex:1;padding:32px 44px 36px;display:flex;flex-direction:column;gap:18px}
+  .ir{display:flex;align-items:flex-start;gap:14px}
+  .ic{width:38px;height:38px;border-radius:8px;background:${accent}20;border:.5px solid ${accent}40;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
+  .il{font-size:8pt;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin:0 0 2px;font-family:'Oswald',sans-serif}
+  .iv{font-size:14pt;font-weight:500;color:#fff;margin:0;line-height:1.3}
+  .dv{height:.5px;background:rgba(255,255,255,.08)}
+  .db{background:rgba(255,255,255,.05);border-radius:8px;border-left:3px solid #4A2C8F;padding:14px 18px}
+  .dl{font-size:8pt;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin:0 0 5px;font-family:'Oswald',sans-serif}
+  .dt{font-size:12pt;color:rgba(255,255,255,.82);margin:0;line-height:1.6}
+  .ff{background:rgba(74,44,143,.5);border-top:.5px solid rgba(74,44,143,.8);padding:16px 44px;display:flex;align-items:center;justify-content:space-between}
+  .fl{font-size:8pt;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin:0 0 3px;font-family:'Oswald',sans-serif}
+  .fv{font-size:13pt;color:${accent};font-weight:500;margin:0}
+  .fb2{font-family:'Oswald',sans-serif;font-size:9pt;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,.18);text-transform:uppercase;text-align:right}</style></head>
+  <body><div class="f"><div class="fh"><div class="s1"></div><div class="s2"></div>
+  <p class="sc">Old Bridge High School · Student Life</p>
+  <p class="cn">${name}</p>${tagline?`<p class="ct">${tagline}</p>`:''}
+  </div><div class="fb">
+  ${day||time?`<div class="ir"><div class="ic">📅</div><div><p class="il">When</p><p class="iv">${[day,time].filter(Boolean).join(', ')}</p></div></div>`:``}
+  ${room?`<div class="ir"><div class="ic">📍</div><div><p class="il">Where</p><p class="iv">${room}</p></div></div>`:``}
+  ${grades?`<div class="ir"><div class="ic">👥</div><div><p class="il">Open to</p><p class="iv">${grades}</p></div></div>`:``}
+  ${about?`<div class="dv"></div><div class="db"><p class="dl">About</p><p class="dt">${about}</p></div>`:``}
+  </div><div class="ff"><div><p class="fl">Contact</p><p class="fv">${[advisor,contact].filter(Boolean).join(' · ')}</p></div>
+  <p class="fb2">OBHS<br>Knights</p></div></div>
+  <script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+
+function Field({label,children}) {
+  return <div><label style={gs.label}>{label}</label>{children}</div>;
+}
+
+function Grid2({children}) {
+  return <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>{children}</div>;
+}
+
+// ── Generator Page ───────────────────────────────────────
+function GeneratorPage() {
+  const [form,setForm]=useState({name:'',tagline:'',day:'',time:'',room:'',grades:'All grades',about:'',advisor:'',contact:'',accent:C.gold,category:'Academic'});
+  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  return (
+    <div style={{maxWidth:1100,margin:'0 auto',padding:'40px 24px'}}>
+      <p style={gs.sectionTitle}>Flyer generator</p>
+      <p style={{color:C.muted,margin:'6px 0 28px',fontSize:14}}>Fill in your club details — the flyer updates live. Hit print when it's ready.</p>
+      <div style={{display:'flex',gap:40,alignItems:'flex-start',flexWrap:'wrap'}}>
+        <div style={{flex:'1 1 320px',display:'flex',flexDirection:'column',gap:16}}>
+          <div style={gs.card}>
+            <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>Club identity</p>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              <Field label="Club name *"><input type="text" placeholder="e.g. Chess Club" value={form.name} onChange={e=>set('name',e.target.value)}/></Field>
+              <Field label="Tagline"><input type="text" placeholder="A short, bold phrase" value={form.tagline} onChange={e=>set('tagline',e.target.value)}/></Field>
+              <Grid2>
+                <Field label="Category">
+                  <select value={form.category} onChange={e=>set('category',e.target.value)}>
+                    {CATS.map(c=><option key={c}>{c}</option>)}
+                  </select>
+                </Field>
+                <Field label="Accent color">
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <input type="color" value={form.accent} onChange={e=>set('accent',e.target.value)} style={{width:44,height:38,padding:2,borderRadius:8,border:`1px solid ${C.nightBorder}`,cursor:'pointer',background:'none',width:'44px'}}/>
+                    <span style={{fontSize:12,color:C.muted}}>{form.accent}</span>
+                  </div>
+                </Field>
+              </Grid2>
+            </div>
+          </div>
+          <div style={gs.card}>
+            <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>Meeting details</p>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              <Grid2>
+                <Field label="Day(s)">
+                  <select value={form.day} onChange={e=>set('day',e.target.value)}>
+                    <option value="">Select day</option>
+                    {DAYS.map(d=><option key={d}>{d}</option>)}
+                  </select>
+                </Field>
+                <Field label="Time"><input type="text" placeholder="3:00–4:00 PM" value={form.time} onChange={e=>set('time',e.target.value)}/></Field>
+              </Grid2>
+              <Grid2>
+                <Field label="Room"><input type="text" placeholder="Room 214" value={form.room} onChange={e=>set('room',e.target.value)}/></Field>
+                <Field label="Open to"><input type="text" placeholder="All grades" value={form.grades} onChange={e=>set('grades',e.target.value)}/></Field>
+              </Grid2>
+            </div>
+          </div>
+          <div style={gs.card}>
+            <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>About & contact</p>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              <Field label="About this club"><textarea placeholder="What does your club do? Who should join?" value={form.about} onChange={e=>set('about',e.target.value)} style={{minHeight:80,resize:'vertical'}}/></Field>
+              <Grid2>
+                <Field label="Advisor name"><input type="text" placeholder="Mr. Rivera" value={form.advisor} onChange={e=>set('advisor',e.target.value)}/></Field>
+                <Field label="Contact email"><input type="text" placeholder="advisor@obhs.edu" value={form.contact} onChange={e=>set('contact',e.target.value)}/></Field>
+              </Grid2>
+            </div>
+          </div>
+          <div style={{display:'flex',gap:10}}>
+            <button style={gs.btnPrimary} onClick={()=>printFlyer(form)}>Print / save as PDF</button>
+            <button style={gs.btnGhost} onClick={()=>setForm({name:'',tagline:'',day:'',time:'',room:'',grades:'All grades',about:'',advisor:'',contact:'',accent:C.gold,category:'Academic'})}>Clear</button>
+          </div>
+        </div>
+        <div style={{flex:'0 0 auto',display:'flex',flexDirection:'column',alignItems:'center',gap:12}}>
+          <p style={{fontSize:12,color:C.muted,textTransform:'uppercase',letterSpacing:'0.08em',margin:0}}>Live preview</p>
+          <FlyerPreview data={form} scale={1}/>
+          <p style={{fontSize:11,color:C.faint,margin:0,textAlign:'center',maxWidth:280}}>Prints at 5.5" × 8.5" — two per standard sheet</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Directory Page ───────────────────────────────────────
+function DirectoryPage({clubs}) {
+  const [search,setSearch]=useState('');
+  const [filter,setFilter]=useState('All');
+  const cats=['All',...CATS];
+  const visible=clubs.filter(c=>c.status==='approved').filter(c=>filter==='All'||c.category===filter).filter(c=>c.name.toLowerCase().includes(search.toLowerCase())||c.about?.toLowerCase().includes(search.toLowerCase()));
+  return (
+    <div style={{maxWidth:1100,margin:'0 auto',padding:'40px 24px'}}>
+      <p style={gs.sectionTitle}>Club directory</p>
+      <p style={{color:C.muted,margin:'6px 0 24px',fontSize:14}}>{clubs.filter(c=>c.status==='approved').length} clubs at OBHS — find yours.</p>
+      <div style={{display:'flex',gap:12,marginBottom:28,flexWrap:'wrap',alignItems:'center'}}>
+        <input type="text" placeholder="Search clubs…" value={search} onChange={e=>setSearch(e.target.value)} style={{maxWidth:280,flex:'1 1 200px'}}/>
+        <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+          {cats.map(cat=>(
+            <button key={cat} onClick={()=>setFilter(cat)} style={{background:filter===cat?(CAT_COLORS[cat]||C.purple):'transparent',color:filter===cat?C.white:C.muted,border:`1px solid ${filter===cat?(CAT_COLORS[cat]||C.purple):C.nightBorder}`,borderRadius:99,padding:'5px 14px',fontSize:12,fontWeight:500,cursor:'pointer',transition:'all 0.15s'}}>{cat}</button>
+          ))}
+        </div>
+      </div>
+      {visible.length===0&&<div style={{...gs.card,textAlign:'center',padding:'60px 24px'}}><p style={{fontSize:32,margin:'0 0 10px'}}>🔍</p><p style={{color:C.muted,margin:0}}>No clubs match that search.</p></div>}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(300px, 1fr))',gap:20}}>
+        {visible.map(club=>(
+          <div key={club.id} style={{...gs.card,display:'flex',flexDirection:'column',gap:12,borderTop:`3px solid ${club.accent||C.purple}`}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+              <div>
+                <p style={{fontFamily:"'Oswald',sans-serif",fontSize:18,fontWeight:700,color:C.white,textTransform:'uppercase',margin:'0 0 2px'}}>{club.name}</p>
+                {club.tagline&&<p style={{fontSize:12,color:C.muted,margin:0,fontStyle:'italic'}}>{club.tagline}</p>}
+              </div>
+              <span style={gs.pill(CAT_COLORS[club.category]||C.purple)}>{club.category}</span>
+            </div>
+            <div style={{height:0.5,background:C.nightBorder}}/>
+            <div style={{display:'flex',flexDirection:'column',gap:6,fontSize:13}}>
+              {(club.day||club.time)&&<span style={{color:C.muted}}>📅 {[club.day,club.time].filter(Boolean).join(', ')}</span>}
+              {club.room&&<span style={{color:C.muted}}>📍 {club.room}</span>}
+              {club.grades&&<span style={{color:C.muted}}>👥 {club.grades}</span>}
+            </div>
+            {club.about&&<p style={{fontSize:13,color:C.muted,margin:0,lineHeight:1.5}}>{club.about.length>120?club.about.slice(0,120)+'…':club.about}</p>}
+            <div style={{marginTop:'auto',paddingTop:4}}>
+              <span style={{fontSize:12,color:club.accent||C.gold,fontWeight:500}}>{[club.advisor,club.contact].filter(Boolean).join(' · ')}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Submit Page ──────────────────────────────────────────
+function SubmitPage({onSubmit}) {
+  const blank={name:'',tagline:'',category:'Academic',day:'',time:'',room:'',grades:'All grades',about:'',advisor:'',contact:'',accent:C.gold,presidentName:'',presidentEmail:'',agreed:false};
+  const [form,setForm]=useState(blank);
+  const [step,setStep]=useState(0);
+  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const valid=form.name&&form.presidentName&&form.presidentEmail&&form.about&&form.agreed;
+
+  if(step===2) return (
+    <div style={{maxWidth:560,margin:'80px auto',padding:'0 24px',textAlign:'center'}}>
+      <div style={{fontSize:56,marginBottom:20}}>🎉</div>
+      <p style={{...gs.sectionTitle,fontSize:32}}>Submitted!</p>
+      <p style={{color:C.muted,fontSize:15,lineHeight:1.6,margin:'12px 0 32px'}}>Your club listing has been sent to Student Life for review. Once approved, it will appear in the Club Directory.</p>
+      <button style={gs.btnPrimary} onClick={()=>{setStep(0);setForm(blank);}}>Submit another club</button>
+    </div>
+  );
+
+  if(step===1) return (
+    <div style={{maxWidth:900,margin:'0 auto',padding:'40px 24px'}}>
+      <button onClick={()=>setStep(0)} style={{...gs.btnGhost,marginBottom:24}}>← Back to edit</button>
+      <p style={gs.sectionTitle}>Review your flyer</p>
+      <p style={{color:C.muted,fontSize:14,margin:'6px 0 28px'}}>This is what Student Life will see. Confirm it looks right before submitting.</p>
+      <div style={{display:'flex',gap:40,flexWrap:'wrap',alignItems:'flex-start'}}>
+        <FlyerPreview data={form} scale={1.1}/>
+        <div style={{flex:1,minWidth:260}}>
+          <div style={{...gs.card,marginBottom:16}}>
+            <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 12px'}}>Submitted by</p>
+            <p style={{margin:'0 0 4px',fontSize:14,color:C.white,fontWeight:500}}>{form.presidentName}</p>
+            <p style={{margin:0,fontSize:13,color:C.muted}}>{form.presidentEmail}</p>
+          </div>
+          <div style={{...gs.card,background:'rgba(74,44,143,0.2)',border:`1px solid ${C.purple}`}}>
+            <p style={{fontSize:13,color:C.muted,margin:'0 0 16px',lineHeight:1.5}}>By submitting, you confirm this information is accurate and this club meets OBHS Student Life guidelines.</p>
+            <button style={{...gs.btnPrimary,width:'100%'}} onClick={()=>{onSubmit(form);setStep(2);}}>Submit for approval →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{maxWidth:700,margin:'0 auto',padding:'40px 24px'}}>
+      <p style={gs.sectionTitle}>Submit your club</p>
+      <p style={{color:C.muted,fontSize:14,margin:'6px 0 28px'}}>Fill out the form below. Student Life will review and approve before your club appears in the directory.</p>
+      <div style={{display:'flex',flexDirection:'column',gap:16}}>
+        <div style={gs.card}>
+          <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>Your info</p>
+          <Grid2>
+            <Field label="Your name *"><input type="text" placeholder="First Last" value={form.presidentName} onChange={e=>set('presidentName',e.target.value)}/></Field>
+            <Field label="Your school email *"><input type="text" placeholder="student@obhs.edu" value={form.presidentEmail} onChange={e=>set('presidentEmail',e.target.value)}/></Field>
+          </Grid2>
+        </div>
+        <div style={gs.card}>
+          <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>Club details</p>
+          <div style={{display:'flex',flexDirection:'column',gap:12}}>
+            <Grid2>
+              <Field label="Club name *"><input type="text" value={form.name} onChange={e=>set('name',e.target.value)} placeholder="e.g. Chess Club"/></Field>
+              <Field label="Category"><select value={form.category} onChange={e=>set('category',e.target.value)}>{CATS.map(c=><option key={c}>{c}</option>)}</select></Field>
+            </Grid2>
+            <Field label="Tagline"><input type="text" value={form.tagline} onChange={e=>set('tagline',e.target.value)} placeholder="One short, bold phrase"/></Field>
+            <Grid2>
+              <Field label="Meeting day(s)"><select value={form.day} onChange={e=>set('day',e.target.value)}><option value="">Select day</option>{DAYS.map(d=><option key={d}>{d}</option>)}</select></Field>
+              <Field label="Time"><input type="text" value={form.time} onChange={e=>set('time',e.target.value)} placeholder="3:00–4:00 PM"/></Field>
+            </Grid2>
+            <Grid2>
+              <Field label="Room"><input type="text" value={form.room} onChange={e=>set('room',e.target.value)} placeholder="Room 214"/></Field>
+              <Field label="Open to"><input type="text" value={form.grades} onChange={e=>set('grades',e.target.value)} placeholder="All grades"/></Field>
+            </Grid2>
+            <Field label="About your club *"><textarea value={form.about} onChange={e=>set('about',e.target.value)} placeholder="What does your club do? Who should join?" style={{minHeight:90,resize:'vertical'}}/></Field>
+            <Grid2>
+              <Field label="Faculty advisor"><input type="text" value={form.advisor} onChange={e=>set('advisor',e.target.value)} placeholder="Mr. Rivera"/></Field>
+              <Field label="Advisor email"><input type="text" value={form.contact} onChange={e=>set('contact',e.target.value)} placeholder="advisor@obhs.edu"/></Field>
+            </Grid2>
+            <Field label="Flyer accent color">
+              <div style={{display:'flex',alignItems:'center',gap:10}}>
+                <input type="color" value={form.accent} onChange={e=>set('accent',e.target.value)} style={{width:44,height:38,padding:2,borderRadius:8,border:`1px solid ${C.nightBorder}`,cursor:'pointer',background:'none'}}/>
+                <span style={{fontSize:13,color:C.muted}}>Pick a color that represents your club</span>
+              </div>
+            </Field>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:12,alignItems:'center',padding:'4px 0'}}>
+          <input type="checkbox" id="agree" checked={form.agreed} onChange={e=>set('agreed',e.target.checked)}/>
+          <label htmlFor="agree" style={{fontSize:13,color:C.muted,cursor:'pointer'}}>I confirm this information is accurate and this club follows OBHS Student Life guidelines.</label>
+        </div>
+        <button style={{...gs.btnPrimary,opacity:valid?1:0.4}} disabled={!valid} onClick={()=>setStep(1)}>Preview flyer before submitting →</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Admin Page ───────────────────────────────────────────
+function AdminPage({clubs,onApprove,onReject}) {
+  const pending=clubs.filter(c=>c.status==='pending');
+  const approved=clubs.filter(c=>c.status==='approved');
+  const [preview,setPreview]=useState(null);
+  return (
+    <div style={{maxWidth:1100,margin:'0 auto',padding:'40px 24px'}}>
+      <div style={{marginBottom:32,display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:12}}>
+        <div>
+          <p style={gs.sectionTitle}>Student Life — admin</p>
+          <p style={{color:C.muted,fontSize:14,margin:'6px 0 0'}}>Review and approve club submissions.</p>
+        </div>
+        <div style={{display:'flex',gap:12}}>
+          {[{n:pending.length,l:'Pending',c:pending.length>0?C.gold:C.white},{n:approved.length,l:'Approved',c:C.white}].map(s=>(
+            <div key={s.l} style={{background:C.nightSurf,border:`1px solid ${C.nightBorder}`,borderRadius:10,padding:'12px 20px',textAlign:'center'}}>
+              <p style={{fontSize:24,fontWeight:700,color:s.c,margin:0,fontFamily:"'Oswald',sans-serif"}}>{s.n}</p>
+              <p style={{fontSize:11,color:C.muted,margin:'2px 0 0',textTransform:'uppercase',letterSpacing:'0.06em'}}>{s.l}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {pending.length===0
+        ? <div style={{...gs.card,textAlign:'center',padding:'48px 24px',marginBottom:40}}><p style={{fontSize:32,margin:'0 0 10px'}}>✅</p><p style={{color:C.muted,margin:0}}>No pending submissions — you're all caught up.</p></div>
+        : <div style={{marginBottom:40}}>
+            <p style={{fontFamily:"'Oswald',sans-serif",fontSize:15,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>Pending review</p>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              {pending.map(club=>(
+                <div key={club.id} style={{...gs.card,borderLeft:`3px solid ${C.gold}`}}>
+                  <div style={{display:'flex',gap:20,alignItems:'flex-start',flexWrap:'wrap'}}>
+                    <div style={{flex:1,minWidth:200}}>
+                      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:6,flexWrap:'wrap'}}>
+                        <p style={{fontFamily:"'Oswald',sans-serif",fontSize:18,fontWeight:700,color:C.white,textTransform:'uppercase',margin:0}}>{club.name}</p>
+                        <span style={gs.pill(CAT_COLORS[club.category]||C.purple)}>{club.category}</span>
+                        <span style={{fontSize:11,color:'#EF9F27',background:'rgba(239,159,39,0.12)',border:'1px solid rgba(239,159,39,0.3)',padding:'2px 8px',borderRadius:99}}>Pending</span>
+                      </div>
+                      {club.presidentName&&<p style={{fontSize:12,color:C.muted,margin:'0 0 6px'}}>Submitted by: <span style={{color:C.white}}>{club.presidentName}</span> · {club.presidentEmail}</p>}
+                      <p style={{fontSize:13,color:C.muted,margin:'0 0 8px',lineHeight:1.4}}>{club.about}</p>
+                      <div style={{fontSize:12,color:C.muted,display:'flex',gap:16,flexWrap:'wrap'}}>
+                        {(club.day||club.time)&&<span>📅 {[club.day,club.time].filter(Boolean).join(', ')}</span>}
+                        {club.room&&<span>📍 {club.room}</span>}
+                        {club.advisor&&<span>👤 {club.advisor}</span>}
+                      </div>
+                    </div>
+                    <div style={{display:'flex',gap:8,alignItems:'center',flexShrink:0}}>
+                      <button onClick={()=>setPreview(preview?.id===club.id?null:club)} style={{...gs.btnGhost,fontSize:12}}>{preview?.id===club.id?'Hide':'Preview flyer'}</button>
+                      <button onClick={()=>{onApprove(club.id);if(preview?.id===club.id)setPreview(null);}} style={{background:'#1D9E75',color:C.white,border:'none',borderRadius:8,padding:'9px 16px',fontSize:13,fontWeight:600,cursor:'pointer'}}>Approve</button>
+                      <button onClick={()=>{onReject(club.id);if(preview?.id===club.id)setPreview(null);}} style={{background:'#A32D2D',color:C.white,border:'none',borderRadius:8,padding:'9px 16px',fontSize:13,fontWeight:600,cursor:'pointer'}}>Reject</button>
+                    </div>
+                  </div>
+                  {preview?.id===club.id&&(
+                    <div style={{width:'100%',paddingTop:16,marginTop:16,borderTop:`1px solid ${C.nightBorder}`,display:'flex',gap:24,alignItems:'flex-start',flexWrap:'wrap'}}>
+                      <FlyerPreview data={club} scale={0.85}/>
+                      <button style={{...gs.btnPrimary,alignSelf:'flex-end'}} onClick={()=>printFlyer(club)}>Print flyer</button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+      }
+
+      <div>
+        <p style={{fontFamily:"'Oswald',sans-serif",fontSize:15,fontWeight:500,color:C.muted,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>Approved clubs ({approved.length})</p>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))',gap:12}}>
+          {approved.map(club=>(
+            <div key={club.id} style={{...gs.card,padding:'14px 18px',borderTop:`2px solid ${club.accent||C.purple}`,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <div>
+                <p style={{fontFamily:"'Oswald',sans-serif",fontSize:15,fontWeight:700,color:C.white,textTransform:'uppercase',margin:'0 0 4px'}}>{club.name}</p>
+                <span style={gs.pill(CAT_COLORS[club.category]||C.purple)}>{club.category}</span>
+              </div>
+              <div style={{display:'flex',gap:6}}>
+                <button onClick={()=>printFlyer(club)} style={{...gs.btnGhost,padding:'6px 12px',fontSize:12}}>Print</button>
+                <button onClick={()=>onReject(club.id)} style={{background:'transparent',color:'#E24B4A',border:'1px solid rgba(226,75,74,0.3)',borderRadius:8,padding:'6px 12px',fontSize:12,cursor:'pointer'}}>Remove</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Nav + Root ───────────────────────────────────────────
+const TABS=[{id:'generate',label:'Flyer generator'},{id:'directory',label:'Club directory'},{id:'submit',label:'Submit a club'},{id:'admin',label:'🔒 Student Life'}];
+
+function App() {
+  const [tab,setTab]=useState('generate');
+  const [clubs,setClubs]=useState(SEED);
+  const onSubmit=form=>setClubs(prev=>[...prev,{...form,id:Date.now(),status:'pending'}]);
+  const onApprove=id=>setClubs(prev=>prev.map(c=>c.id===id?{...c,status:'approved'}:c));
+  const onReject=id=>setClubs(prev=>prev.filter(c=>c.id!==id));
+
+  return (
+    <div style={{minHeight:'100vh',background:C.night,color:C.white}}>
+      <nav style={{background:C.nightMid,borderBottom:`1px solid ${C.nightBorder}`,padding:'0 24px',display:'flex',alignItems:'center',position:'sticky',top:0,zIndex:100,flexWrap:'wrap'}}>
+        <div style={{fontFamily:"'Oswald',sans-serif",fontSize:20,fontWeight:700,color:C.white,letterSpacing:'0.04em',textTransform:'uppercase',padding:'16px 0',marginRight:32,display:'flex',alignItems:'center',gap:10}}>
+          <div style={{width:8,height:8,borderRadius:'50%',background:C.gold}}/>
+          OBHS Club Hub
+        </div>
+        {TABS.map(t=>(
+          <button key={t.id} onClick={()=>setTab(t.id)} style={{padding:'18px 16px 16px',fontSize:13,fontWeight:500,color:tab===t.id?C.white:C.muted,borderBottom:tab===t.id?`2px solid ${C.gold}`:'2px solid transparent',cursor:'pointer',background:'none',border:'none',borderBottom:tab===t.id?`2px solid ${C.gold}`:'2px solid transparent',fontFamily:"'Inter',sans-serif"}}>
+            {t.label}
+          </button>
+        ))}
+      </nav>
+      {tab==='generate'&&<GeneratorPage/>}
+      {tab==='directory'&&<DirectoryPage clubs={clubs}/>}
+      {tab==='submit'&&<SubmitPage onSubmit={onSubmit}/>}
+      {tab==='admin'&&<AdminPage clubs={clubs} onApprove={onApprove} onReject={onReject}/>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
