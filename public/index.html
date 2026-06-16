@@ -206,6 +206,79 @@ function Grid2({children}) {
   return <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>{children}</div>;
 }
 
+// ── Generator Page ───────────────────────────────────────
+function GeneratorPage() {
+  const [form,setForm]=useState({name:'',tagline:'',day:'',time:'',room:'',grades:'All grades',about:'',advisor:'',contact:'',accent:C.gold,category:'Academic'});
+  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  return (
+    <div style={{maxWidth:1100,margin:'0 auto',padding:'40px 24px'}}>
+      <p style={gs.sectionTitle}>Flyer generator</p>
+      <p style={{color:C.muted,margin:'6px 0 28px',fontSize:14}}>Fill in your club details — the flyer updates live. Hit print when it's ready.</p>
+      <div style={{display:'flex',gap:40,alignItems:'flex-start',flexWrap:'wrap'}}>
+        <div style={{flex:'1 1 320px',display:'flex',flexDirection:'column',gap:16}}>
+          <div style={gs.card}>
+            <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>Club identity</p>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              <Field label="Club name *"><input type="text" placeholder="e.g. Chess Club" value={form.name} onChange={e=>set('name',e.target.value)}/></Field>
+              <Field label="Tagline"><input type="text" placeholder="A short, bold phrase" value={form.tagline} onChange={e=>set('tagline',e.target.value)}/></Field>
+              <Grid2>
+                <Field label="Category">
+                  <select value={form.category} onChange={e=>set('category',e.target.value)}>
+                    {CATS.map(c=><option key={c}>{c}</option>)}
+                  </select>
+                </Field>
+                <Field label="Accent color">
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <input type="color" value={form.accent} onChange={e=>set('accent',e.target.value)} style={{width:44,height:38,padding:2,borderRadius:8,border:`1px solid ${C.nightBorder}`,cursor:'pointer',background:'none'}}/>
+                    <span style={{fontSize:12,color:C.muted}}>{form.accent}</span>
+                  </div>
+                </Field>
+              </Grid2>
+            </div>
+          </div>
+          <div style={gs.card}>
+            <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>Meeting details</p>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              <Grid2>
+                <Field label="Day(s)">
+                  <select value={form.day} onChange={e=>set('day',e.target.value)}>
+                    <option value="">Select day</option>
+                    {DAYS.map(d=><option key={d}>{d}</option>)}
+                  </select>
+                </Field>
+                <Field label="Time"><input type="text" placeholder="3:00–4:00 PM" value={form.time} onChange={e=>set('time',e.target.value)}/></Field>
+              </Grid2>
+              <Grid2>
+                <Field label="Room"><input type="text" placeholder="Room 214" value={form.room} onChange={e=>set('room',e.target.value)}/></Field>
+                <Field label="Open to"><input type="text" placeholder="All grades" value={form.grades} onChange={e=>set('grades',e.target.value)}/></Field>
+              </Grid2>
+            </div>
+          </div>
+          <div style={gs.card}>
+            <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>About & contact</p>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              <Field label="About this club"><textarea placeholder="What does your club do? Who should join?" value={form.about} onChange={e=>set('about',e.target.value)} style={{minHeight:80,resize:'vertical'}}/></Field>
+              <Grid2>
+                <Field label="Advisor name"><input type="text" placeholder="Mr. Rivera" value={form.advisor} onChange={e=>set('advisor',e.target.value)}/></Field>
+                <Field label="Contact email"><input type="text" placeholder="advisor@obhs.edu" value={form.contact} onChange={e=>set('contact',e.target.value)}/></Field>
+              </Grid2>
+            </div>
+          </div>
+          <div style={{display:'flex',gap:10}}>
+            <button style={gs.btnPrimary} onClick={()=>printFlyer(form)}>Print / save as PDF</button>
+            <button style={gs.btnGhost} onClick={()=>setForm({name:'',tagline:'',day:'',time:'',room:'',grades:'All grades',about:'',advisor:'',contact:'',accent:C.gold,category:'Academic'})}>Clear</button>
+          </div>
+        </div>
+        <div style={{flex:'0 0 auto',display:'flex',flexDirection:'column',alignItems:'center',gap:12}}>
+          <p style={{fontSize:12,color:C.muted,textTransform:'uppercase',letterSpacing:'0.08em',margin:0}}>Live preview</p>
+          <FlyerPreview data={form} scale={1}/>
+          <p style={{fontSize:11,color:C.faint,margin:0,textAlign:'center',maxWidth:280}}>Prints at 5.5" × 8.5" — two per standard sheet</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Directory Page ───────────────────────────────────────
 function DirectoryPage({extraClubs}) {
   const [sheetClubs, setSheetClubs] = useState([]);
@@ -304,80 +377,6 @@ function DirectoryPage({extraClubs}) {
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-  
-// ── Generator Page ───────────────────────────────────────
-function GeneratorPage() {
-  const [form,setForm]=useState({name:'',tagline:'',day:'',time:'',room:'',grades:'All grades',about:'',advisor:'',contact:'',accent:C.gold,category:'Academic'});
-  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
-  return (
-    <div style={{maxWidth:1100,margin:'0 auto',padding:'40px 24px'}}>
-      <p style={gs.sectionTitle}>Flyer generator</p>
-      <p style={{color:C.muted,margin:'6px 0 28px',fontSize:14}}>Fill in your club details — the flyer updates live. Hit print when it's ready.</p>
-      <div style={{display:'flex',gap:40,alignItems:'flex-start',flexWrap:'wrap'}}>
-        <div style={{flex:'1 1 320px',display:'flex',flexDirection:'column',gap:16}}>
-          <div style={gs.card}>
-            <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>Club identity</p>
-            <div style={{display:'flex',flexDirection:'column',gap:12}}>
-              <Field label="Club name *"><input type="text" placeholder="e.g. Chess Club" value={form.name} onChange={e=>set('name',e.target.value)}/></Field>
-              <Field label="Tagline"><input type="text" placeholder="A short, bold phrase" value={form.tagline} onChange={e=>set('tagline',e.target.value)}/></Field>
-              <Grid2>
-                <Field label="Category">
-                  <select value={form.category} onChange={e=>set('category',e.target.value)}>
-                    {CATS.map(c=><option key={c}>{c}</option>)}
-                  </select>
-                </Field>
-                <Field label="Accent color">
-                  <div style={{display:'flex',alignItems:'center',gap:8}}>
-                    <input type="color" value={form.accent} onChange={e=>set('accent',e.target.value)} style={{width:44,height:38,padding:2,borderRadius:8,border:`1px solid ${C.nightBorder}`,cursor:'pointer',background:'none'}}/>
-                    <span style={{fontSize:12,color:C.muted}}>{form.accent}</span>
-                  </div>
-                </Field>
-              </Grid2>
-            </div>
-          </div>
-          <div style={gs.card}>
-            <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>Meeting details</p>
-            <div style={{display:'flex',flexDirection:'column',gap:12}}>
-              <Grid2>
-                <Field label="Day(s)">
-                  <select value={form.day} onChange={e=>set('day',e.target.value)}>
-                    <option value="">Select day</option>
-                    {DAYS.map(d=><option key={d}>{d}</option>)}
-                  </select>
-                </Field>
-                <Field label="Time"><input type="text" placeholder="3:00–4:00 PM" value={form.time} onChange={e=>set('time',e.target.value)}/></Field>
-              </Grid2>
-              <Grid2>
-                <Field label="Room"><input type="text" placeholder="Room 214" value={form.room} onChange={e=>set('room',e.target.value)}/></Field>
-                <Field label="Open to"><input type="text" placeholder="All grades" value={form.grades} onChange={e=>set('grades',e.target.value)}/></Field>
-              </Grid2>
-            </div>
-          </div>
-          <div style={gs.card}>
-            <p style={{fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:500,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',margin:'0 0 16px'}}>About & contact</p>
-            <div style={{display:'flex',flexDirection:'column',gap:12}}>
-              <Field label="About this club"><textarea placeholder="What does your club do? Who should join?" value={form.about} onChange={e=>set('about',e.target.value)} style={{minHeight:80,resize:'vertical'}}/></Field>
-              <Grid2>
-                <Field label="Advisor name"><input type="text" placeholder="Mr. Rivera" value={form.advisor} onChange={e=>set('advisor',e.target.value)}/></Field>
-                <Field label="Contact email"><input type="text" placeholder="advisor@obhs.edu" value={form.contact} onChange={e=>set('contact',e.target.value)}/></Field>
-              </Grid2>
-            </div>
-          </div>
-          <div style={{display:'flex',gap:10}}>
-            <button style={gs.btnPrimary} onClick={()=>printFlyer(form)}>Print / save as PDF</button>
-            <button style={gs.btnGhost} onClick={()=>setForm({name:'',tagline:'',day:'',time:'',room:'',grades:'All grades',about:'',advisor:'',contact:'',accent:C.gold,category:'Academic'})}>Clear</button>
-          </div>
-        </div>
-        <div style={{flex:'0 0 auto',display:'flex',flexDirection:'column',alignItems:'center',gap:12}}>
-          <p style={{fontSize:12,color:C.muted,textTransform:'uppercase',letterSpacing:'0.08em',margin:0}}>Live preview</p>
-          <FlyerPreview data={form} scale={1}/>
-          <p style={{fontSize:11,color:C.faint,margin:0,textAlign:'center',maxWidth:280}}>Prints at 5.5" × 8.5" — two per standard sheet</p>
-        </div>
-      </div>
     </div>
   );
 }
